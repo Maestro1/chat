@@ -1,0 +1,38 @@
+<!-- chat/templates/chat/index.html -->
+<!DOCTYPE html>
+{% extends "chat/layouts/base.html" %}
+{% load materializecss %}
+{% load material_form %}
+
+{% block title %} Chat Rooms {% endblock %}
+    
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.1/css/materialize.min.css" integrity="sha256-qj36P1fJIV+Ndv7RW1ovZI2UhOuboj9GcODzcNFIN8=" crossorigin="anonymous" />
+
+{% endblock stylesheets %}
+
+{% block content%}
+<br>
+<h1>Select the user you want to chat with...</h1>
+<br>
+<div class="dropdown">
+<form method="post">
+  {% csrf_token %}
+  
+  <select id="users" name="users" class="btn btn-secondary dropdown-toggle">
+  <div class="dropdown-menu">
+    {% for receiver in users %}
+       <option class="dropdown-item" value="{{ receiver.id}}">
+        <p>{{ receiver.username }} 
+        </p>
+       </option>
+    {% endfor %}
+  </div>
+  </select>
+  <br><br>
+  <button class="btn" type="submit" style="background-color: #1B2430;color: white">Chat</button>
+</form>
+</div>
+{%  endblock content %} 
+

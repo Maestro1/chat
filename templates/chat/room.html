@@ -1,0 +1,142 @@
+<!-- chat/templates/chat/room.html -->
+<!DOCTYPE html>
+{% extends "chat/layouts/base.html" %}
+{% load materializecss %}
+{% load material_form %}
+
+{% block title %} Chat Room {% endblock %}
+{% block stylesheets %} 
+
+{% endblock %}
+
+{% block content %}
+<section style="background-color: #eee;">
+  <div class="container py-5">
+    <div class=row d-flex justify-content-center">
+     <div class="col-md-8 col-lg-6 col-xl-4">
+      <div class="card" style="height: auto; overflow-y: scroll;" >
+        <div class="card-header d-flex justify-content-between align-items-center p-3" style="border-top: 4px solid #ffa900;">
+          <h5 class="mb-0">Chat messages</h5>
+          <div class="d-flex flex-row align-items-center">
+            <span class="badge bg-warning me-3">20</span>
+            <i class="bi bi-file-minus"></i>
+            <i class="bi bi-amd"></i>
+          </div>
+        </div>
+      
+       <div class="card-body" data-mdb-perfect-scrollbar="true" style="position: relative; height: 400px" id="chat-log">
+    {% for message in messages %}
+          {% if message.sender == user %}
+          <div class="d-flex justify-content-between">
+          <p class="small mb-1">{{ message.sender}}</p>
+          <p class="small mb-1">{{message.timestamp}}</p>
+          </div>
+          <div class="d-flex flex-row justify-content-start">
+           <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava4-bg.webp" alt="avatar 1" style="width: 45px; height: 100%;">
+            <div>
+              <p class="small p-2 ms-3 mb-3 rounded-3" style="background-color: #f5f6f7;">{{message.message}}</p>
+            </div>
+          </div>
+          {%else%}
+            <div class="d-flex justify-content-between">
+            <p class="small mb-1">{{ message.sender}}</p>
+            <p class="small mb-1">{{message.timestamp}}</p>
+          </div>
+           <div class="d-flex flex-row justify-content-start">
+              <div>
+                <p class="small p-2 ms-3 mb-3 rounded-3" style="background-color:     #f5f6f7;">{{message.message}}</p>
+              </div>
+               <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava5-bg.webp" alt="avatar 1" style="width: 45px; height: 100%;">
+           </div>
+
+          {% endif %}
+          <br>
+    {% endfor %}
+</div>
+      </div>
+<div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
+  <div class="input-group mb-0">
+    <input id="chat-message-input" type="text" class="form-control" placeholder="Type mesage" ><br>
+  <input id="chat-message-submit" type="button" value="Chat" class="btn btn-warning">
+</div>
+</div>
+     </div>
+    </div>
+  </div>
+</section>
+<br><br>
+{{room_name|json_script:"room-name"}}
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
+    </script>
+<script>
+let chatlog = document.getElementById("chat-log");
+chatlog.scrollTop = chatlog.scrollHeight;
+var sender = '{{ sender_id }}';
+var receiver = '{{ receiver_id }}';
+var sender_name = '{{sender_name }}';
+var user =  '{{user}}';
+var now =  new Date().toGMTString();
+const roomName = JSON.parse(document.getElementById('room-name').textContent);
+const chatSocket = new WebSocket(
+          'ws://'
+          +window.location.host
+          +'/ws/chat/'
+          + roomName
+          +'/'
+          );
+chatSocket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      console.log("Data below.....");
+      console.log(data);
+      if(data.sender_name === user){
+
+var chatlog = document.querySelector("#chat-log");
+var newchat = `<div class='d-flex justify-content-between'><p id='sender-name' class='small mb-1'>${data.sender_name}</p><p id='time' class='small mb-1'>${now}</p></div><div class='d-flex flex-row justify-content-start'><img src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava4-bg.webp' alt='avatar 1' style='width: 45px; height:100%'><div><p id ='message' class='small p-2 ms-3 mb-3 rounded-3' style='background-color: #f5f6f7;'>${data.message}</p></div></div>`;
+      chatlog.insertAdjacentHTML('beforeend',newchat);
+      var sender = document.querySelector("#sender-name");
+      console.log("Entered if");
+      chatlog.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+else {
+  var chatlog = document.querySelector("#chat-log");
+  var newchat = `<div class='d-flex justify-content-between'><p id='sender-name' class='small mb-1'>${data.sender_name}</p><p id='time' class='small mb-1'>${now}</p></div><div class='d-flex flex-row justify-content-start'><div><p id='message' class='small p-2 ms-3 mb-3 rounded-3' style='background-color: #f5f6f7;'>${data.message}</p></div><img src='https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava4-bg.webp' alt='avatar 1' style='width: 45px; height:100%'></div>`;
+  chatlog.insertAdjacentHTML('beforeend',newchat);
+ console.log("Entered else");
+chatlog.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+};
+chatSocket.onclose = function(e) {
+      console.log('Error', e)
+      console.error('Chat socket closed unexpectedly');
+};
+document.querySelector('#chat-message-input').focus();
+document.querySelector('#chat-message-input').onkeyup = function(e) {
+  if (e.key === 'Enter') {
+    document.querySelector('#chat-message-submit').click();
+  }
+};
+
+document.querySelector('#chat-message-submit').onclick = function(e) {
+  const messageInputDom = document.querySelector('#chat-message-input');
+  const message = messageInputDom.value;
+  console.log("Message on click");
+  console.log(message);
+  chatSocket.send(JSON.stringify({
+    'message': message,
+    'sender': sender,
+    'receiver': receiver,
+    'sender_name':sender_name,
+    'user': user
+  }));
+  messageInputDom.value = '';
+};
+</script>
+{% endblock content %}

@@ -1,0 +1,79 @@
+{% extends "chat/layouts/base.html" %}
+{% load materializecss %}
+{% load material_form %}
+{% block title %} Login {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.1/css/materialize.min.css" integrity="sha256-qj3p6P1fJIV+Ndv7RW1ovZI2UhOuboj9GcODzcNFIN8=" crossorigin="anonymous" />
+{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="row">
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-header card-header-primary" style="background-color:#52B43B;border-color:#52B43B">
+          <h4 class="card-title">
+            Create Account
+          </h4>
+        </div>
+        <div class="card-body">
+
+          <h6 class="card-category">
+              {% if msg %}
+                <span class="text-danger">{{ msg | safe }}</span>
+              {% else %}
+                Add your credentials
+              {% endif %}  
+          </h6>
+          
+          <br />
+
+
+
+	  <form role="form" method="POST" enctype="multipart/form-data" action="">
+                
+              {% csrf_token %} 
+
+	      {{form|materializecss}}
+
+              <button type="submit" name="register" class="btn btn-primary pull-left" style="background-color:#52B43B">Register</button>
+
+              &nbsp; &nbsp; 
+              <span class="pull-right">
+                Have an account? <a href="{% url 'login' %}" class="text-primary">Login</a>
+              </span>
+
+              <div class="clearfix"></div>
+
+            </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-rc.1/js/materialize.min.js" integrity="sha256-SrBfGi+Zp2LhAvy9M1bWOCXztRU9Ztztxmu5BcYPcPE=" crossorigin="anonymous"></script>
+
+<script>
+$(document).ready(function(){
+
+  // Initialize materialize data picker
+  $('.datepicker').datepicker({'format': 'yyyy-mm-dd'});
+  $('select').formSelect();
+
+});
+</script>
+
+{% endblock javascripts %}
